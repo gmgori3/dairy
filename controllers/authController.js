@@ -20,7 +20,7 @@ exports.registerDairy = async (req, res) => {
     const password = "0099";
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const req = await User.create({
+    const dairy = await User.create({
       firstName,
       countryCode,
       phoneNumber,
