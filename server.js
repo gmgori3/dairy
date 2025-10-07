@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const { default: mongoose } = require("mongoose");
 
 dotenv.config(); // Load .env
 
@@ -35,7 +36,32 @@ app.get("/", (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on http://localhost:${PORT}`);
+// });
+
+let isConnected = false;
+async function connectToDatabase() {
+  try {
+    if (!isConnected) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      isConnected = true;
+      console.log("Database connected successfully.");
+  }
+} catch (error) {
+  console.error("Database connection error:", error);
+}
+}
+
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    await connectToDatabase();
+  }
+  next();
 });
+
+module.exports = app;
