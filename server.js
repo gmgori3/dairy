@@ -1,47 +1,66 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const dairyRoutes = require("./routes/dairyRoutes");
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import connectDB from "./config/db.js"; // make sure this uses ES module export
+import dairyRoutes from "./routes/dairyRoutes.js";
 
-dotenv.config();
+dotenv.config(); // Load .env
 
 const app = express();
-app.use(express.json());
 
+// Middleware
+app.use(express.json()); // Parse JSON bodies
+
+// MongoDB connection (serverless-friendly)
 let isConnected = false;
 
 async function connectToDatabase() {
-  if (isConnected) return;
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-    });
-    isConnected = conn.connections[0].readyState === 1;
-    console.log("✅ MongoDB connected");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err.message);
+    if (!isConnected) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      isConnected = true;
+      console.log("✅ Database connected successfully.");
+    }
+  } catch (error) {
+    console.error("❌ Database connection error:", error);
   }
 }
 
-// ✅ Connect to DB before setting routes
-connectToDatabase().then(() => {
-  app.use("/api/auth", dairyRoutes);
+// Middleware to ensure DB is connected before handling routes
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    await connectToDatabase();
+  }
+  next();
+});
 
-  app.get("/", (req, res) => {
-    res.send("✅ API is running...");
+// Routes
+app.use("/api/auth", dairyRoutes);
+
+// Default route
+app.get("/", (req, res) => {
+  res.send("✅ Node.js Auth API is running...");
+});
+
+// 404 handler
+app.use((req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: `Cannot ${req.method} ${req.originalUrl}`,
   });
 });
 
-// Error handlers
-app.use((req, res) =>
-  res.status(404).json({ success: false, message: "Route not found" })
-);
-
+// 500 handler
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ success: false, message: err.message });
+  console.error("Error:", err.message);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
 });
 
-module.exports = app;
+// Export app for Vercel
+export default app;
