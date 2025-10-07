@@ -14,8 +14,11 @@ const generateToken = (user) => {
 exports.registerDairy = async (req, res) => {
   try {
     const { firstName, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+
     const existing = await User.findOne({ phoneNumber });
-    if (existing) return responseHandler.errorResponse(res, "Phone number already registered", [], 400);
+    if (existing) {
+      return responseHandler.errorResponse(res, "Phone number already registered", [], 400);
+    }
 
     const password = "0099";
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,11 +34,19 @@ exports.registerDairy = async (req, res) => {
       password: hashedPassword
     });
 
-    responseHandler.successResponse(res, "Dairy registered successfully", { dairy, token: generateToken(dairy) }, 201);
+    // Assuming generateToken() creates a JWT
+    responseHandler.successResponse(
+      res,
+      "Dairy registered successfully",
+      { dairy, token: generateToken(dairy) },
+      201
+    );
+
   } catch (err) {
     responseHandler.errorResponse(res, "Registration failed", err.message, 500);
   }
 };
+
 
 // ✅ Login Dairy
 exports.login = async (req, res) => {
