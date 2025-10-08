@@ -35,13 +35,13 @@ exports.registerCustomerValidator = [
 exports.updateDairyValidator = [
   body("id").notEmpty().withMessage("ID is required"),
   body("firstName").notEmpty().withMessage("First name is required"),
-  body("phoneNumber").notEmpty().withMessage("Phone number is required"),
+  // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
 ];
 
 exports.updateCustomerValidator = [
   body("id").notEmpty().withMessage("Customer ID is required"),
   body("firstName").notEmpty().withMessage("First name is required"),
-  body("phoneNumber").notEmpty().withMessage("Phone number is required"),
+  // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
 ];
 
 // SNF Fat Validators

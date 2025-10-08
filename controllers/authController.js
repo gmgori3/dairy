@@ -33,14 +33,11 @@ exports.registerDairy = async (req, res) => {
       otp_expires_at: moment().add(5, "minutes"),
       password: hashedPassword
     });
+    const userData = dairy.toObject(); 
+    userData.token = generateToken(dairy);
 
     // Assuming generateToken() creates a JWT
-    responseHandler.successResponse(
-      res,
-      "Dairy registered successfully",
-      { dairy, token: generateToken(dairy) },
-      201
-    );
+    responseHandler.successResponse(res,"Dairy registered successfully",userData);
 
   } catch (err) {
     responseHandler.errorResponse(res, "Registration failed", err.message, 500);
@@ -82,8 +79,9 @@ exports.loginWithOtp = async (req, res) => {
       user.otp = null;
       user.otp_expires_at = null;
       await user.save();
-
-      responseHandler.successResponse(res, "Login successful", { token: generateToken(user) });
+      const userData = user.toObject();
+      userData.token = generateToken(userData);
+      responseHandler.successResponse(res, "Login successful", userData);
     } else {
       responseHandler.errorResponse(res, "Invalid OTP or expired", [], 400);
     }
@@ -109,13 +107,11 @@ exports.deleteDairy = async (req, res) => {
 // ✅ Update Dairy
 exports.dairyUpdate = async (req, res) => {
   try {
-    const { id, firstName, countryCode, phoneNumber, dateOfBirth } = req.body;
+    const { id, firstName, dateOfBirth } = req.body;
     const dairy = await User.findById(id);
     if (!dairy) return responseHandler.errorResponse(res, "Dairy not found", [], 404);
 
     dairy.firstName = firstName;
-    dairy.countryCode = countryCode;
-    dairy.phoneNumber = phoneNumber;
     dairy.dateOfBirth = moment(dateOfBirth, "DD-MM-YYYY").toDate();
 
     await dairy.save();
