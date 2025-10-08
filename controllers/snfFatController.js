@@ -26,7 +26,6 @@ exports.store = async (req, res) => {
     snf: item.snf,
     fat: item.fat,
     value: item.value || 0,
-    snf_fat_category: item.snf_fat_category,
     categorychart_id: item.categorychart_id || 0,
     dairy_id: item.dairy_id
   }));
@@ -55,7 +54,6 @@ exports.update = async (req, res) => {
           snf: item.snf,
           fat: item.fat,
           value: item.value || 0,
-          snf_fat_category: item.snf_fat_category,
           categorychart_id: item.categorychart_id || 0,
           dairy_id: item.dairy_id,
         },
