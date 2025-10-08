@@ -27,12 +27,7 @@ exports.addMilkEntryValidator = [
 
 // Edit milk entry
 exports.editMilkEntryValidator = [
-  body("id").notEmpty().withMessage("ID is required"),
-  body("dairyId").notEmpty().withMessage("Dairy ID is required"),
-  body("shift").notEmpty().withMessage("Shift is required"),
-  body("milkWeight").notEmpty().withMessage("Milk Weight is required"),
-  body("type").notEmpty().withMessage("Type is required"),
-  body("customerId").notEmpty().withMessage("Customer ID is required"),
+  body("id").notEmpty().withMessage("ID is required")
 ];
 
 // Update milk entry

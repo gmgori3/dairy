@@ -12,8 +12,8 @@ const milkSellerSchema = new mongoose.Schema(
       ref: "User", // link to users
       required: true,
     },
-    snf: { type: Number, required: true },
-    clr: { type: Number, required: true },
+    snf: { type: Number, default: null },
+    clr: { type: Number, default: null },
     fat: { type: Number, required: true },
     pricePerKg: { type: Number, required: true },
     entryDate: { type: Date, required: true },

@@ -61,7 +61,7 @@ router.get("/get-snf-by-dairy", authMiddleware, snfFatController.getByDairyId);
 router.post("/add-milk-entry", authMiddleware, addMilkEntryValidator, validate, milkEntryController.addMilkEntry);
 router.get("/milk-entries-daily", authMiddleware,milkEntryDailyValidator, milkEntryController.getMilkEntryDaily);
 router.post("/milk-entry-by-date", authMiddleware, milkEntryByDateValidator, validate, milkEntryController.getMilkEntryByDate);
-router.put("/edit-milk-entry", authMiddleware, editMilkEntryValidator, validate, milkEntryController.editMilkEntry);
+router.post("/edit-milk-entry", authMiddleware, editMilkEntryValidator, validate, milkEntryController.editMilkEntry);
 router.put("/update-milk-entry", authMiddleware, updateMilkEntryValidator, validate, milkEntryController.updateMilkEntry);
 router.delete("/delete-milk-entry", authMiddleware, deleteMilkEntryValidator, validate, milkEntryController.deleteMilkEntry);
 

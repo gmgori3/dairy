@@ -79,12 +79,39 @@ exports.getMilkEntryDaily = async (req, res) => {
 // Add milk entry
 exports.addMilkEntry = async (req, res) => {
   try {
-    const { type, dairyId } = req.body;
-    const milkEntry =
-      type == 1
-        ? await MilkSeller.create(req.body)
-        : await MilkBuyer.create(req.body);
+    const {
+      type,
+      dairyId,
+      customerId,
+      snf,
+      clr,
+      fat,
+      pricePerKg,
+      entryDate,
+      milkType,
+      shift,
+      totalPrice,
+      milkWeight,
+    } = req.body;
 
+    const Model = type == 1 ? MilkSeller : MilkBuyer;
+
+    // ✅ Create new entry
+    const milkEntry = await Model.create({
+      dairyId,
+      customerId,
+      snf,
+      clr,
+      fat,
+      pricePerKg,
+      entryDate,
+      milkType,
+      shift,
+      totalPrice,
+      milkWeight,
+    });
+
+    // ✅ Increment total entry count
     await User.findByIdAndUpdate(dairyId, { $inc: { totalMilkEntry: 1 } });
 
     return responseHandler.successResponse(
@@ -93,10 +120,13 @@ exports.addMilkEntry = async (req, res) => {
       milkEntry
     );
   } catch (error) {
-    console.error(error);
-    return responseHandler.errorResponse(res, "Unauthorized", [], 500);
+    console.error("Add Milk Entry Error:", error);
+    return responseHandler.errorResponse(res, "Failed to add entry", [], 500);
   }
 };
+
+
+
 
 // Edit milk entry (retrieve details for editing)
 exports.editMilkEntry = async (req, res) => {
@@ -128,31 +158,47 @@ exports.editMilkEntry = async (req, res) => {
 // Update milk entry
 exports.updateMilkEntry = async (req, res) => {
   try {
-    const { id, type } = req.body;
-    const milkEntry =
-      type == 1
-        ? await MilkSeller.findByIdAndUpdate(id, req.body, { new: true })
-        : await MilkBuyer.findByIdAndUpdate(id, req.body, { new: true });
+    const {
+      id, // ✅ milk entry _id
+      type,
+      snf,
+      clr,
+      fat,
+      pricePerKg,
+      totalPrice,
+      milkWeight,
+    } = req.body;
 
-    if (!milkEntry) {
-      return responseHandler.errorResponse(
-        res,
-        "Milk entry not found",
-        [],
-        403
-      );
+    const Model = type == 1 ? MilkSeller : MilkBuyer;
+
+    // ✅ Find by ID
+    const existingEntry = await Model.findById(id);
+
+    if (!existingEntry) {
+      return responseHandler.errorResponse(res, "Entry not found", [], 404);
     }
+
+    // ✅ Update fields
+    existingEntry.snf = snf ?? existingEntry.snf;
+    existingEntry.clr = clr ?? existingEntry.clr;
+    existingEntry.fat = fat ?? existingEntry.fat;
+    existingEntry.pricePerKg = pricePerKg ?? existingEntry.pricePerKg;
+    existingEntry.totalPrice = totalPrice ?? existingEntry.totalPrice;
+    existingEntry.milkWeight = milkWeight ?? existingEntry.milkWeight;
+
+    const updatedEntry = await existingEntry.save();
 
     return responseHandler.successResponse(
       res,
       "Milk entry updated successfully.",
-      milkEntry
+      updatedEntry
     );
   } catch (error) {
-    console.error(error);
-    return responseHandler.errorResponse(res, "Unauthorized", [], 500);
+    console.error("Update Milk Entry Error:", error);
+    return responseHandler.errorResponse(res, "Failed to update entry", [], 500);
   }
 };
+
 
 // Delete milk entry
 exports.deleteMilkEntry = async (req, res) => {
