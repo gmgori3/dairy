@@ -58,7 +58,10 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return responseHandler.errorResponse(res, "Invalid credentials", [], 400);
 
-    responseHandler.successResponse(res, "Login successful", { user, token: generateToken(user) });
+    const userData = user.toObject(); 
+    userData.token = generateToken(user);
+
+    responseHandler.successResponse(res, "Login successful", userData);
   } catch (err) {
     responseHandler.errorResponse(res, "Login failed", err.message, 500);
   }
