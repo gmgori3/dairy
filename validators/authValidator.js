@@ -53,9 +53,6 @@ exports.storeSnfFatValidator = [
     check("data.*.fat")
         .exists().withMessage("FAT is required")
         .isNumeric().withMessage("FAT must be numeric"),
-    check("data.*.snf_fat_category")
-        .exists().withMessage("SNF Fat Category is required")
-        .isInt().withMessage("SNF Fat Category must be an integer"),
     check("data.*.dairy_id")
         .exists().withMessage("Dairy ID is required"),
     check("data.*.value")
@@ -75,9 +72,6 @@ exports.updateSnfFatValidator = [
     check("data.*.fat")
         .exists().withMessage("FAT is required")
         .isNumeric().withMessage("FAT must be numeric"),
-    check("data.*.snf_fat_category")
-        .exists().withMessage("SNF Fat Category is required")
-        .isInt().withMessage("SNF Fat Category must be an integer"),
     check("data.*.dairy_id")
         .exists().withMessage("Dairy ID is required")
         .isInt().withMessage("Dairy ID must be an integer"),
