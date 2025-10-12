@@ -13,7 +13,7 @@ const generateToken = (user) => {
 // ✅ Register Dairy
 exports.registerDairy = async (req, res) => {
   try {
-    const { fullName, email, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+    const { fullName, email, address,countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
 
     // Validate required fields
     if (!fullName || !phoneNumber || !centerName || !dateOfBirth) {
@@ -31,6 +31,7 @@ exports.registerDairy = async (req, res) => {
     const dairy = await User.create({
       fullName,
       email,
+      address,
       countryCode,
       phoneNumber,
       centerName,
