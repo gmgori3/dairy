@@ -1,114 +1,65 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import dairyRoutes from "./routes/dairyRoutes.js";
 
-dotenv.config();
+dotenv.config(); // Load .env
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// MongoDB connection with better error handling
+// MongoDB connection (serverless-friendly)
 let isConnected = false;
 
 async function connectToDatabase() {
-  if (isConnected && mongoose.connection.readyState === 1) {
-    return;
-  }
-
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    isConnected = true;
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    if (!isConnected) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      isConnected = true;
+      console.log("✅ Database connected successfully.");
+    }
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
-    isConnected = false;
-    throw error;
+    console.error("❌ Database connection error:", error);
   }
 }
 
-// Connect to database on startup
-connectToDatabase().catch(err => {
-  console.error("Failed to connect to database on startup:", err);
+// Middleware to ensure DB is connected before handling routes
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    await connectToDatabase();
+  }
+  next();
 });
 
-// Health check route (before other routes)
+// Routes
+app.use("/api/auth", dairyRoutes);
+
+// Default route
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "✅ Node.js API is running...",
-    dbStatus: isConnected ? "Connected" : "Disconnected"
-  });
+  res.send("✅ Node.js Auth API is running...");
 });
-
-// Test route to verify basic functionality
-app.get("/api/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Test route working",
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Import routes with error handling
-let dairyRoutes, customerRoutes;
-
-try {
-  const dairyModule = await import("./routes/dairyRoutes.js");
-  dairyRoutes = dairyModule.default;
-  console.log("✅ Dairy routes loaded");
-} catch (error) {
-  console.error("❌ Error loading dairy routes:", error.message);
-}
-
-try {
-  const customerModule = await import("./routes/customerRoutes.js");
-  customerRoutes = customerModule.default;
-  console.log("✅ Customer routes loaded");
-} catch (error) {
-  console.error("❌ Error loading customer routes:", error.message);
-}
-
-// Register routes only if they loaded successfully
-if (dairyRoutes) {
-  app.use("/api/auth", dairyRoutes);
-  console.log("✅ Dairy routes registered at /api/auth");
-}
-
-if (customerRoutes) {
-  app.use("/api/customers", customerRoutes);
-  console.log("✅ Customer routes registered at /api/customers");
-}
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({
+  return res.status(404).json({
     success: false,
     message: `Cannot ${req.method} ${req.originalUrl}`,
   });
 });
 
-// Global error handler
+// 500 handler
 app.use((err, req, res, next) => {
-  console.error("❌ Error:", err);
+  console.error("Error:", err.message);
   res.status(500).json({
     success: false,
     message: "Internal Server Error",
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-}
-
-export default app;
+// Export app for Vercel
+export default app;
