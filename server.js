@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import dairyRoutes from "./routes/dairyRoutes.js";
-import dairyRoutes from "./routes/customerRoutes.js";
+import customerRoutes from "./routes/customerRoutes.js";
 
 dotenv.config(); // Load .env
 
