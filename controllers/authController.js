@@ -15,6 +15,11 @@ exports.registerDairy = async (req, res) => {
   try {
     const { firstName, lastName, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
 
+    // Validate required fields
+    if (!firstName || !phoneNumber || !centerName || !dateOfBirth) {
+      return responseHandler.errorResponse(res, "Missing required fields", [], 400);
+    }
+
     const existing = await User.findOne({ phoneNumber });
     if (existing) {
       return responseHandler.errorResponse(res, "Phone number already registered", [], 400);
@@ -25,7 +30,7 @@ exports.registerDairy = async (req, res) => {
 
     const dairy = await User.create({
       firstName,
-      lastName,
+      lastName: lastName || '', // Provide default if not present
       countryCode,
       phoneNumber,
       centerName,
@@ -34,13 +39,14 @@ exports.registerDairy = async (req, res) => {
       otp_expires_at: moment().add(5, "minutes"),
       password: hashedPassword
     });
+    
     const userData = dairy.toObject(); 
     userData.token = generateToken(dairy);
 
-    // Assuming generateToken() creates a JWT
-    responseHandler.successResponse(res,"Dairy registered successfully",userData);
+    responseHandler.successResponse(res, "Dairy registered successfully", userData);
 
   } catch (err) {
+    console.error('Registration error:', err);
     responseHandler.errorResponse(res, "Registration failed", err.message, 500);
   }
 };
