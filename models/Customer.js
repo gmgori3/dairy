@@ -8,6 +8,7 @@ const CustomerSchema = new mongoose.Schema(
     countryCode: { type: String, required: true },
     password: { type: String, required: true },
     otp: { type: String },
+    roleId: { type: String },
     otp_expires_at: { type: Date },
     dairyId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     priceType: { 
@@ -16,6 +17,8 @@ const CustomerSchema = new mongoose.Schema(
       default: 0,
       comment: '0 = Not Set, 1 = Fixed Price, 2 = SNF (Solid Not Fat), 3 = CLR (Combined Lactometer Reading)'
     },
+    latitude: { type: Number }, // No validation
+    longitude: { type: Number }, // No validation
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }

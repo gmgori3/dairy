@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import dairyRoutes from "./routes/dairyRoutes.js";
+import dairyRoutes from "./routes/customerRoutes.js";
 
 dotenv.config(); // Load .env
 
@@ -38,6 +39,7 @@ app.use(async (req, res, next) => {
 
 // Routes
 app.use("/api/auth", dairyRoutes);
+app.use("/api/customers", customerRoutes);
 
 // Default route
 app.get("/", (req, res) => {

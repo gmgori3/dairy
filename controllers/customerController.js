@@ -15,7 +15,7 @@ const generateToken = (user) => {
 // Register Customer
 exports.registerCustomer = async (req, res) => {
   try {
-    const { firstName, lastName, centerName, phoneNumber, address, countryCode, dateOfBirth, password, dairyId } = req.body;
+    const { fullName, phoneNumber, address, countryCode, password, dairyId, roleId } = req.body;
 
     // Check if customer already exists based on phone number
     const existing = await Customer.findOne({ phoneNumber });
@@ -26,15 +26,14 @@ exports.registerCustomer = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const customer = await Customer.create({
-      firstName,
-      lastName,
-      centerName,
+      fullName,
       phoneNumber,
       address,
       countryCode,
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
       password: hashedPassword,
-      dairyId
+      dairyId,
+      roleId  
     });
 
     return responseHandler.successResponse(res, "Customer registered successfully", customer, 201);
@@ -70,22 +69,19 @@ exports.loginCustomer = async (req, res) => {
 // Update Customer
 exports.updateCustomer = async (req, res) => {
   try {
-    const { id, firstName, lastName, centerName, phoneNumber, address, countryCode, dateOfBirth, dairyId, fixPrice, isActive } = req.body;
+    const { id, fullName, phoneNumber, address, countryCode, password, dairyId, roleId} = req.body;
     const customer = await Customer.findById(id);
     if (!customer) {
       return responseHandler.errorResponse(res, "Customer not found", {}, 404);
     }
 
-    customer.firstName = firstName || customer.firstName;
-    customer.lastName = lastName || customer.lastName;
-    customer.centerName = centerName || customer.centerName;
+    customer.fullName = fullName || customer.fullName;
     customer.phoneNumber = phoneNumber || customer.phoneNumber;
     customer.address = address || customer.address;
     customer.countryCode = countryCode || customer.countryCode;
-    if (dateOfBirth) customer.dateOfBirth = new Date(dateOfBirth);
+    if (password) customer.password = password;
     if (dairyId) customer.dairyId = dairyId;
-    if (typeof fixPrice !== "undefined") customer.fixPrice = fixPrice;
-    if (typeof isActive !== "undefined") customer.isActive = isActive;
+    if (roleId) customer.roleId = roleId;
 
     await customer.save();
     return responseHandler.successResponse(res, "Customer updated successfully", customer, 200);
@@ -116,7 +112,8 @@ exports.deleteCustomer = async (req, res) => {
     if (!customer) {
       return responseHandler.errorResponse(res, "Customer not found", {}, 404);
     }
-    await customer.deleteOne();
+    customer.isActive = false;
+    await customer.save();
     return responseHandler.successResponse(res, "Customer deleted successfully", {}, 200);
   } catch (err) {
     return responseHandler.errorResponse(res, "Customer deletion failed", err.message, 500);
