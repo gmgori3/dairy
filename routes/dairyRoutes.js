@@ -36,10 +36,10 @@ router.delete("/delete-milk-entry", authMiddleware, deleteMilkEntryValidator, va
 
 
 // Dairy
-//router.post("/register-dairy", registerDairyValidator, validate, authController.registerDairy);
-router.post("/login", loginValidator, validate, authController.login);
-router.post("/login-otp", loginWithOtpValidator, validate, authController.loginWithOtp);
-router.put("/update-dairy", authMiddleware, updateDairyValidator, validate, authController.dairyUpdate);
+router.post("/register-dairy", authController.registerDairy);
+router.post("/login", authController.login);
+router.post("/login-otp", authController.loginWithOtp);
+router.put("/update-dairy", authMiddleware, authController.dairyUpdate);
 router.delete("/delete-dairy", authMiddleware, authController.deleteDairy);
 
 // Other
