@@ -24,7 +24,7 @@ exports.registerDairy = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const dairy = await User.create({
-      firstName,
+      first_name,
       lastName,
       countryCode,
       phoneNumber,
