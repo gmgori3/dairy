@@ -25,6 +25,7 @@ exports.registerDairy = async (req, res) => {
 
     const dairy = await User.create({
       firstName,
+      lastName,
       countryCode,
       phoneNumber,
       centerName,
@@ -121,69 +122,6 @@ exports.dairyUpdate = async (req, res) => {
   }
 };
 
-// ✅ Register Customer
-exports.registerCustomer = async (req, res) => {
-  try {
-    const { firstName, countryCode, phoneNumber, dairyId } = req.body;
-    const existing = await User.findOne({ phoneNumber });
-    if (existing) return responseHandler.errorResponse(res, "Phone number already used", [], 400);
-
-    const customer = await User.create({ firstName, countryCode, phoneNumber, dairyId });
-    await User.findByIdAndUpdate(dairyId, { $inc: { totalCustomer: 1 } });
-
-    responseHandler.successResponse(res, "Customer registered successfully", customer);
-  } catch (err) {
-    responseHandler.errorResponse(res, "Customer register failed", err.message, 500);
-  }
-};
-
-// ✅ Get Dairy Customers
-exports.dairyCustomerDetail = async (req, res) => {
-  try {
-    const { dairyId } = req.body;
-    const customers = await User.find({ dairyId }).select("id firstName lastName phoneNumber");
-
-    if (!customers.length) return responseHandler.errorResponse(res, "No customers found", [], 404);
-
-    responseHandler.successResponse(res, "Customers found", customers);
-  } catch (err) {
-    responseHandler.errorResponse(res, "Error fetching customers", err.message, 500);
-  }
-};
-
-// ✅ Update Customer
-exports.dairyCustomerUpdate = async (req, res) => {
-  try {
-    const { id, firstName, countryCode, phoneNumber } = req.body;
-    const customer = await User.findById(id);
-    if (!customer) return responseHandler.errorResponse(res, "Customer not found", [], 404);
-
-    customer.firstName = firstName;
-    customer.countryCode = countryCode;
-    customer.phoneNumber = phoneNumber;
-
-    await customer.save();
-    responseHandler.successResponse(res, "Customer updated successfully", customer);
-  } catch (err) {
-    responseHandler.errorResponse(res, "Update failed", err.message, 500);
-  }
-};
-
-// ✅ Delete Customer
-exports.deleteCustomer = async (req, res) => {
-  try {
-    const { id } = req.body;
-    const customer = await User.findById(id);
-    if (!customer) return responseHandler.errorResponse(res, "Customer not found", [], 404);
-
-    await User.findByIdAndUpdate(customer.dairyId, { $inc: { totalCustomer: -1 } });
-    await customer.deleteOne();
-
-    responseHandler.successResponse(res, "Customer deleted successfully");
-  } catch (err) {
-    responseHandler.errorResponse(res, "Delete failed", err.message, 500);
-  }
-};
 
 // ✅ Get Country Codes
 exports.getCountryCode = async (req, res) => {

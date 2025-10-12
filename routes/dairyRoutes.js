@@ -42,12 +42,6 @@ router.post("/login-otp", loginWithOtpValidator, validate, authController.loginW
 router.put("/update-dairy", authMiddleware, updateDairyValidator, validate, authController.dairyUpdate);
 router.delete("/delete-dairy", authMiddleware, authController.deleteDairy);
 
-// Customer
-router.post("/register-customer", authMiddleware, registerCustomerValidator, validate, authController.registerCustomer);
-router.get("/customers", authMiddleware, authController.dairyCustomerDetail);
-router.put("/update-customer", authMiddleware, updateCustomerValidator, validate, authController.dairyCustomerUpdate);
-router.delete("/delete-customer", authMiddleware, authController.deleteCustomer);
-
 // Other
 router.get("/countries", authController.getCountryCode);
 router.post("/logout", authMiddleware, authController.logout);

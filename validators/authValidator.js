@@ -23,26 +23,12 @@ exports.loginWithOtpValidator = [
   body("otp").notEmpty().withMessage("OTP is required"),
 ];
 
-exports.registerCustomerValidator = [
-  body("firstName").notEmpty().withMessage("First name is required"),
-  body("countryCode").notEmpty().withMessage("Country code is required"),
-  body("phoneNumber")
-    .notEmpty().withMessage("Phone number is required")
-    .isMobilePhone().withMessage("Invalid phone number"),
-  body("dairyId").notEmpty().withMessage("Dairy ID is required"),
-];
-
 exports.updateDairyValidator = [
   body("id").notEmpty().withMessage("ID is required"),
   body("firstName").notEmpty().withMessage("First name is required"),
   // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
 ];
 
-exports.updateCustomerValidator = [
-  body("id").notEmpty().withMessage("Customer ID is required"),
-  body("firstName").notEmpty().withMessage("First name is required"),
-  // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
-];
 
 // SNF Fat Validators
 exports.storeSnfFatValidator = [
