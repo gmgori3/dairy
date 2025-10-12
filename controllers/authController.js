@@ -115,16 +115,47 @@ exports.deleteDairy = async (req, res) => {
 // ✅ Update Dairy
 exports.dairyUpdate = async (req, res) => {
   try {
-    const { id, firstName, dateOfBirth } = req.body;
-    const dairy = await User.findById(id);
-    if (!dairy) return responseHandler.errorResponse(res, "Dairy not found", [], 404);
+    const { dairyId } = req.params; // or req.body.dairyId
+    const { fullName, email, address, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
 
-    dairy.firstName = firstName;
-    dairy.dateOfBirth = moment(dateOfBirth, "DD-MM-YYYY").toDate();
+    // Check if dairy exists
+    const dairy = await User.findById(dairyId);
+    if (!dairy) {
+      return responseHandler.errorResponse(res, "Dairy not found", [], 404);
+    }
 
-    await dairy.save();
-    responseHandler.successResponse(res, "Dairy updated successfully", dairy);
+    // If phoneNumber is being updated, check if it's already taken by another user
+    if (phoneNumber && phoneNumber !== dairy.phoneNumber) {
+      const existing = await User.findOne({ phoneNumber, _id: { $ne: dairyId } });
+      if (existing) {
+        return responseHandler.errorResponse(res, "Phone number already registered", [], 400);
+      }
+    }
+
+    // Prepare update data
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+    if (email) updateData.email = email;
+    if (address) updateData.address = address;
+    if (countryCode) updateData.countryCode = countryCode;
+    if (phoneNumber) updateData.phoneNumber = phoneNumber;
+    if (centerName) updateData.centerName = centerName;
+    if (dateOfBirth) updateData.dateOfBirth = moment(dateOfBirth, "DD-MM-YYYY").toDate();
+
+    // Update dairy
+    const updatedDairy = await User.findByIdAndUpdate(
+      dairyId,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    const userData = updatedDairy.toObject();
+    userData.token = generateToken(updatedDairy);
+
+    responseHandler.successResponse(res, "Dairy updated successfully", userData);
+
   } catch (err) {
+    console.error('Update error:', err);
     responseHandler.errorResponse(res, "Update failed", err.message, 500);
   }
 };

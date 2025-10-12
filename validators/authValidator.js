@@ -25,7 +25,7 @@ exports.loginWithOtpValidator = [
 
 exports.updateDairyValidator = [
   body("id").notEmpty().withMessage("ID is required"),
-  body("firstName").notEmpty().withMessage("First name is required"),
+  body("fullName").notEmpty().withMessage("Full name is required"),
   // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
 ];
 
