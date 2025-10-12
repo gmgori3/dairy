@@ -13,10 +13,10 @@ const generateToken = (user) => {
 // ✅ Register Dairy
 exports.registerDairy = async (req, res) => {
   try {
-    const { firstName, lastName, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+    const { fullName, email, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
 
     // Validate required fields
-    if (!firstName || !phoneNumber || !centerName || !dateOfBirth) {
+    if (!fullName || !phoneNumber || !centerName || !dateOfBirth) {
       return responseHandler.errorResponse(res, "Missing required fields", [], 400);
     }
 
@@ -29,8 +29,8 @@ exports.registerDairy = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const dairy = await User.create({
-      firstName,
-      lastName: lastName || '', // Provide default if not present
+      fullName,
+      email,
       countryCode,
       phoneNumber,
       centerName,

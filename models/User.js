@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
-    firstName: { type: String, required: true },
-    lastName: { type: String }, // new field
+    fullName: { type: String, required: true },
+    email: { type: String},
     centerName: { type: String },
     phoneNumber: { type: String, required: true, unique: true },
     address: { type: String }, // new field
@@ -18,7 +18,12 @@ const UserSchema = new mongoose.Schema(
     totalCustomer: { type: Number, default: 0 },
     registerStartDate: { type: Date }, // new field
     registerEndDate: { type: Date }, // new field
-    fixPrice: { type: Number, default: 0 }, // new field
+    priceType: { 
+      type: Number, 
+      enum: [0, 1, 2, 3],
+      default: 0,
+      comment: '0 = Not Set, 1 = Fixed Price, 2 = SNF (Solid Not Fat), 3 = CLR (Combined Lactometer Reading)'
+    },
     userRoleId: { type: String }, // new field (could be ObjectId if referencing a Role collection)
     longitude: { type: Number }, // new field
     latitude: { type: Number }, // new field
