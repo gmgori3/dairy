@@ -1,76 +1,48 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import connectDB from "./config/db.js"; // make sure this uses ES module export
 import dairyRoutes from "./routes/dairyRoutes.js";
-import customerRoutes from "./routes/customerRoutes.js";
 
-dotenv.config();
+dotenv.config(); // Load .env
 
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json()); // Parse JSON bodies
 
-// MongoDB connection with proper error handling
+// MongoDB connection (serverless-friendly)
 let isConnected = false;
 
 async function connectToDatabase() {
-  if (isConnected && mongoose.connection.readyState === 1) {
-    return;
-  }
-
   try {
-    // Remove deprecated options
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    
-    isConnected = true;
-    console.log("✅ Database connected successfully.");
+    if (!isConnected) {
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      isConnected = true;
+      console.log("✅ Database connected successfully.");
+    }
   } catch (error) {
-    console.error("❌ Database connection error:", error.message);
-    isConnected = false;
-    throw error;
+    console.error("❌ Database connection error:", error);
   }
 }
 
-// Handle mongoose connection events
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
-  isConnected = false;
-});
-
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
-  isConnected = false;
-});
-
-// Middleware to ensure DB is connected
+// Middleware to ensure DB is connected before handling routes
 app.use(async (req, res, next) => {
-  try {
+  if (!isConnected) {
     await connectToDatabase();
-    next();
-  } catch (error) {
-    return res.status(503).json({
-      success: false,
-      message: "Database connection failed",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
   }
+  next();
 });
 
 // Routes
 app.use("/api/auth", dairyRoutes);
-app.use("/api/customer", customerRoutes);
 
 // Default route
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "✅ Node.js Auth API is running...",
-    timestamp: new Date().toISOString()
-  });
+  res.send("✅ Node.js Auth API is running...");
 });
 
 // 404 handler
@@ -81,24 +53,14 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
+// 500 handler
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err);
-  
-  res.status(err.status || 500).json({
+  console.error("Error:", err.message);
+  res.status(500).json({
     success: false,
-    message: err.message || "Internal Server Error",
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    message: "Internal Server Error",
   });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-}
-
-// Export for Vercel
-export default app;
+// Export app for Vercel
+export default app;
