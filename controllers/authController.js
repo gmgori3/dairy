@@ -115,8 +115,12 @@ exports.deleteDairy = async (req, res) => {
 // ✅ Update Dairy
 exports.dairyUpdate = async (req, res) => {
   try {
-    const { dairyId } = req.params; // or req.body.dairyId
-    const { fullName, email, address, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+    const { dairyId, fullName, email, address, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+
+    // Validate dairyId
+    if (!dairyId) {
+      return responseHandler.errorResponse(res, "Dairy ID is required", [], 400);
+    }
 
     // Check if dairy exists
     const dairy = await User.findById(dairyId);
@@ -150,6 +154,7 @@ exports.dairyUpdate = async (req, res) => {
     );
 
     const userData = updatedDairy.toObject();
+    delete userData.password; // Remove password from response
     userData.token = generateToken(updatedDairy);
 
     responseHandler.successResponse(res, "Dairy updated successfully", userData);
