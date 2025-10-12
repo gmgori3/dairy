@@ -154,8 +154,7 @@ exports.dairyUpdate = async (req, res) => {
     );
 
     const userData = updatedDairy.toObject();
-    delete userData.password; // Remove password from response
-    userData.token = generateToken(updatedDairy);
+    delete userData.password; 
 
     responseHandler.successResponse(res, "Dairy updated successfully", userData);
 
