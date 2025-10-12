@@ -101,8 +101,8 @@ exports.loginWithOtp = async (req, res) => {
 // ✅ Delete Dairy
 exports.deleteDairy = async (req, res) => {
   try {
-    const { id } = req.body;
-    const user = await User.findById(id);
+    const { dairyId } = req.body;
+    const user = await User.findById(dairyId);
     if (!user) return responseHandler.errorResponse(res, "Dairy not found", [], 404);
 
     await user.deleteOne();
