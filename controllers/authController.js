@@ -13,7 +13,7 @@ const generateToken = (user) => {
 // ✅ Register Dairy
 exports.registerDairy = async (req, res) => {
   try {
-    const { firstName, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
+    const { first_name, countryCode, phoneNumber, centerName, dateOfBirth } = req.body;
 
     const existing = await User.findOne({ phoneNumber });
     if (existing) {
