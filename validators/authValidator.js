@@ -2,7 +2,7 @@
 const { body, check } = require("express-validator");
 
 exports.registerDairyValidator = [
-  body("first_name").notEmpty().withMessage("First name is required"),
+  body("firstName").notEmpty().withMessage("First name is required"),
   body("countryCode").notEmpty().withMessage("Country code is required"),
   body("phoneNumber")
     .notEmpty().withMessage("Phone number is required")
