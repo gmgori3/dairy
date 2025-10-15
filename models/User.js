@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -25,11 +25,11 @@ const UserSchema = new mongoose.Schema(
       comment: '0 = Not Set, 1 = Fixed Price, 2 = SNF (Solid Not Fat), 3 = CLR (Combined Lactometer Reading)'
     },
     userRoleId: { type: String },
-    longitude: { type: Number }, // Added
-    latitude: { type: Number }, // Added
+    longitude: { type: Number },
+    latitude: { type: Number },
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", UserSchema);
+export default mongoose.model("User", UserSchema);

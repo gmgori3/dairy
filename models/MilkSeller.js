@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const milkSellerSchema = new mongoose.Schema(
   {
@@ -32,4 +32,4 @@ milkSellerSchema.methods.softDelete = function () {
   return this.save();
 };
 
-module.exports = mongoose.model("MilkSeller", milkSellerSchema);
+export default mongoose.model("MilkSeller", milkSellerSchema);

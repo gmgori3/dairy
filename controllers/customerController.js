@@ -1,7 +1,7 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Customer = require("../models/Customer");
-const responseHandler = require("../helper/responseHandler");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Customer from "../models/Customer.js";
+import responseHandler from "../helper/responseHandler.js";
 
 // Helper to generate a JWT token for the customer
 const generateToken = (user) => {
@@ -13,11 +13,10 @@ const generateToken = (user) => {
 };
 
 // Register Customer
-exports.registerCustomer = async (req, res) => {
+export const registerCustomer = async (req, res) => {
   try {
     const { fullName, phoneNumber, address, countryCode, password, dairyId, roleId } = req.body;
 
-    // Check if customer already exists based on phone number
     const existing = await Customer.findOne({ phoneNumber });
     if (existing) {
       return responseHandler.errorResponse(res, "Phone number already used", {}, 400);
@@ -30,10 +29,9 @@ exports.registerCustomer = async (req, res) => {
       phoneNumber,
       address,
       countryCode,
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
       password: hashedPassword,
       dairyId,
-      roleId  
+      roleId
     });
 
     return responseHandler.successResponse(res, "Customer registered successfully", customer, 201);
@@ -43,7 +41,7 @@ exports.registerCustomer = async (req, res) => {
 };
 
 // Login Customer
-exports.loginCustomer = async (req, res) => {
+export const loginCustomer = async (req, res) => {
   try {
     const { phoneNumber, countryCode, password } = req.body;
 
@@ -67,9 +65,9 @@ exports.loginCustomer = async (req, res) => {
 };
 
 // Update Customer
-exports.updateCustomer = async (req, res) => {
+export const updateCustomer = async (req, res) => {
   try {
-    const { id, fullName, phoneNumber, address, countryCode, password, dairyId, roleId} = req.body;
+    const { id, fullName, phoneNumber, address, countryCode, password, dairyId, roleId } = req.body;
     const customer = await Customer.findById(id);
     if (!customer) {
       return responseHandler.errorResponse(res, "Customer not found", {}, 404);
@@ -91,7 +89,7 @@ exports.updateCustomer = async (req, res) => {
 };
 
 // Get Customer Details (Edit)
-exports.editCustomer = async (req, res) => {
+export const editCustomer = async (req, res) => {
   try {
     const { id } = req.params;
     const customer = await Customer.findById(id);
@@ -105,7 +103,7 @@ exports.editCustomer = async (req, res) => {
 };
 
 // Delete Customer
-exports.deleteCustomer = async (req, res) => {
+export const deleteCustomer = async (req, res) => {
   try {
     const { id } = req.body;
     const customer = await Customer.findById(id);

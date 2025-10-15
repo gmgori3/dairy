@@ -1,62 +1,112 @@
-const express = require("express");
-const router = express.Router();
-const authController = require("../controllers/authController");
-const snfFatController = require("../controllers/snfFatController"); // added import for SNF Fat controller
-const validate = require("../middleware/validate");
-const authMiddleware = require("../middleware/authMiddleware");
-const milkEntryController = require("../controllers/milkEntryController"); 
-const {
+import express from "express";
+
+// Controllers
+import { login, registerDairy, dairyUpdate, deleteDairy, getCountryCode, logout } from "../controllers/authController.js";
+
+
+import { 
+  store as storeSnfFat,
+  update as updateSnfFat,
+  getByDairyId
+} from "../controllers/snfFatController.js";
+
+import { 
+  getMilkEntryByDate,
+  getMilkEntryDaily,
+  addMilkEntry,
+  editMilkEntry,
+  updateMilkEntry,
+  deleteMilkEntry
+} from "../controllers/milkEntryController.js";
+
+// Middleware
+import validate from "../middleware/validate.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
+// Validators
+import {
   registerDairyValidator,
   loginValidator,
   loginWithOtpValidator,
-  registerCustomerValidator,
   updateDairyValidator,
-  updateCustomerValidator,
   storeSnfFatValidator,
   updateSnfFatValidator,
-} = require("../validators/authValidator");
-const {
+} from "../validators/authValidator.js";
+
+import {
   milkEntryByDateValidator,
   milkEntryDailyValidator,
   addMilkEntryValidator,
   editMilkEntryValidator,
   updateMilkEntryValidator,
   deleteMilkEntryValidator,
-} = require("../validators/milkEntryValidator");
+} from "../validators/milkEntryValidator.js";
 
-// Milk Entry Routes
-router.post("/milk-entry-by-date", authMiddleware, milkEntryByDateValidator, validate, milkEntryController.getMilkEntryByDate);
-router.post("/milk-entry-daily", authMiddleware, milkEntryDailyValidator, validate, milkEntryController.getMilkEntryDaily);
-router.post("/add-milk-entry", authMiddleware, addMilkEntryValidator, validate, milkEntryController.addMilkEntry);
-router.put("/edit-milk-entry", authMiddleware, editMilkEntryValidator, validate, milkEntryController.editMilkEntry);
-router.put("/update-milk-entry", authMiddleware, updateMilkEntryValidator, validate, milkEntryController.updateMilkEntry);
-router.delete("/delete-milk-entry", authMiddleware, deleteMilkEntryValidator, validate, milkEntryController.deleteMilkEntry);
+const router = express.Router();
 
-// Other Routes
+// -------------------- Milk Entry Routes --------------------
+router.post(
+  "/milk-entry-by-date",
+  authMiddleware,
+  milkEntryByDateValidator,
+  validate,
+  getMilkEntryByDate
+);
 
+router.post(
+  "/milk-entry-daily",
+  authMiddleware,
+  milkEntryDailyValidator,
+  validate,
+  getMilkEntryDaily
+);
 
-// Dairy
-router.post("/register-dairy", registerDairyValidator, validate, authController.registerDairy);
-router.post("/login", loginValidator, validate, authController.login);
-router.post("/login-otp", loginWithOtpValidator, validate, authController.loginWithOtp);
-router.put("/update-dairy", authMiddleware, updateDairyValidator, validate, authController.dairyUpdate);
-router.delete("/delete-dairy", authMiddleware, authController.deleteDairy);
+router.post(
+  "/add-milk-entry",
+  authMiddleware,
+  addMilkEntryValidator,
+  validate,
+  addMilkEntry
+);
 
-// Other
-router.get("/countries", authController.getCountryCode);
-router.post("/logout", authMiddleware, authController.logout);
+router.put(
+  "/edit-milk-entry",
+  authMiddleware,
+  editMilkEntryValidator,
+  validate,
+  editMilkEntry
+);
 
-/// SNF Fat Endpoints
-router.post("/store-snf-fat", storeSnfFatValidator, validate, snfFatController.store);
-router.put("/update-snf-fat", authMiddleware, updateSnfFatValidator, validate, snfFatController.update);
-router.get("/get-snf-by-dairy", authMiddleware, snfFatController.getByDairyId);
+router.put(
+  "/update-milk-entry",
+  authMiddleware,
+  updateMilkEntryValidator,
+  validate,
+  updateMilkEntry
+);
 
-// Milk Entry Endpoints can be added here similarly
-router.post("/add-milk-entry", authMiddleware, addMilkEntryValidator, validate, milkEntryController.addMilkEntry);
-router.get("/milk-entries-daily", authMiddleware,milkEntryDailyValidator, milkEntryController.getMilkEntryDaily);
-router.post("/milk-entry-by-date", authMiddleware, milkEntryByDateValidator, validate, milkEntryController.getMilkEntryByDate);
-router.post("/edit-milk-entry", authMiddleware, editMilkEntryValidator, validate, milkEntryController.editMilkEntry);
-router.put("/update-milk-entry", authMiddleware, updateMilkEntryValidator, validate, milkEntryController.updateMilkEntry);
-router.delete("/delete-milk-entry", authMiddleware, deleteMilkEntryValidator, validate, milkEntryController.deleteMilkEntry);
+router.delete(
+  "/delete-milk-entry",
+  authMiddleware,
+  deleteMilkEntryValidator,
+  validate,
+  deleteMilkEntry
+);
 
-module.exports = router;
+// -------------------- Dairy Routes --------------------
+router.post("/register-dairy", registerDairyValidator, validate, registerDairy);
+router.post("/login", loginValidator, validate, login);
+//router.post("/login-otp", loginWithOtpValidator, validate, loginWithOtp);
+router.put("/update-dairy", authMiddleware, updateDairyValidator, validate, dairyUpdate);
+router.delete("/delete-dairy", authMiddleware, deleteDairy);
+
+// -------------------- Other Routes --------------------
+router.get("/countries", getCountryCode);
+router.post("/logout", authMiddleware, logout);
+
+// -------------------- SNF Fat Routes --------------------
+router.post("/store-snf-fat", storeSnfFatValidator, validate, storeSnfFat);
+router.put("/update-snf-fat", authMiddleware, updateSnfFatValidator, validate, updateSnfFat);
+router.get("/get-snf-by-dairy", authMiddleware, getByDairyId);
+
+export default router;

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import dairyRoutes from "./routes/dairyRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 
-dotenv.config(); // Load .env variables
+dotenv.config();
 
 const app = express();
 
@@ -17,19 +17,18 @@ let isConnected = false;
 
 async function connectToDatabase() {
   if (isConnected) return;
-
+  
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       dbName: process.env.DB_NAME || "dairyApp",
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000, // fail fast if unreachable
+      serverSelectionTimeoutMS: 10000,
     });
-
+    
     isConnected = conn.connections[0].readyState === 1;
     console.log("✅ MongoDB Connected:", conn.connection.host);
   } catch (err) {
     console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1);
   }
 }
 
@@ -47,8 +46,9 @@ app.use("/api/customer", customerRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "🚀 Dairy API is running on AWS environment!",
+    message: "🚀 Dairy API is running!",
     env: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -60,20 +60,41 @@ app.use((req, res) => {
   });
 });
 
-// ✅ 500 handler
+// ✅ 500 Error handler
 app.use((err, req, res, next) => {
-  console.error("⚠️ Server Error:", err);
+  console.error("⚠️ Server Error:", err.stack);
   res.status(500).json({
     success: false,
     message: "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 
-// ✅ Start Server (for AWS EC2 / Elastic Beanstalk / local)
+// ✅ Graceful shutdown
+process.on("SIGTERM", async () => {
+  console.log("⚠️ SIGTERM received, closing server gracefully...");
+  if (isConnected) {
+    await mongoose.connection.close();
+    console.log("✅ MongoDB connection closed");
+  }
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  console.log("⚠️ SIGINT received, closing server gracefully...");
+  if (isConnected) {
+    await mongoose.connection.close();
+    console.log("✅ MongoDB connection closed");
+  }
+  process.exit(0);
+});
+
+// ✅ Start Server
 const PORT = process.env.PORT || 8080;
 const HOST = "0.0.0.0";
 
 app.listen(PORT, HOST, async () => {
   await connectToDatabase();
-  console.log(`🚀 Server running on http://${HOST}:${PORT} in AWS environment`);
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+  console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
 });

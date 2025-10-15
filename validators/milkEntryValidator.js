@@ -1,7 +1,7 @@
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 // Get milk entry by date
-exports.milkEntryByDateValidator = [
+export const milkEntryByDateValidator = [
   body("dairyId").notEmpty().withMessage("Dairy ID is required"),
   body("shift").notEmpty().withMessage("Shift is required"),
   body("type").notEmpty().withMessage("Type is required"),
@@ -10,14 +10,14 @@ exports.milkEntryByDateValidator = [
 ];
 
 // Get milk entry daily
-exports.milkEntryDailyValidator = [
+export const milkEntryDailyValidator = [
   body("dairyId").notEmpty().withMessage("Dairy ID is required"),
   body("shift").notEmpty().withMessage("Shift is required"),
   body("type").notEmpty().withMessage("Type is required"),
 ];
 
 // Add milk entry
-exports.addMilkEntryValidator = [
+export const addMilkEntryValidator = [
   body("dairyId").notEmpty().withMessage("Dairy ID is required"),
   body("shift").notEmpty().withMessage("Shift is required"),
   body("milkWeight").notEmpty().withMessage("Milk Weight is required"),
@@ -26,17 +26,17 @@ exports.addMilkEntryValidator = [
 ];
 
 // Edit milk entry
-exports.editMilkEntryValidator = [
+export const editMilkEntryValidator = [
   body("id").notEmpty().withMessage("ID is required")
 ];
 
 // Update milk entry
-exports.updateMilkEntryValidator = [
+export const updateMilkEntryValidator = [
   body("id").notEmpty().withMessage("ID is required")
 ];
 
 // Delete milk entry
-exports.deleteMilkEntryValidator = [
+export const deleteMilkEntryValidator = [
   body("id").notEmpty().withMessage("ID is required"),
   body("type").notEmpty().withMessage("Type is required"),
 ];

@@ -1,7 +1,8 @@
-// validators/authValidator.js
-const { body, check } = require("express-validator");
+import { body, check } from "express-validator";
 
-exports.registerDairyValidator = [
+// -------------------- Dairy Validators --------------------
+
+export const registerDairyValidator = [
   body("fullName").notEmpty().withMessage("Full name is required"),
   body("countryCode").notEmpty().withMessage("Country code is required"),
   body("phoneNumber")
@@ -11,58 +12,58 @@ exports.registerDairyValidator = [
   body("dateOfBirth").notEmpty().withMessage("Date of birth is required"),
 ];
 
-exports.loginValidator = [
+export const loginValidator = [
   body("phoneNumber").notEmpty().withMessage("Phone number is required"),
   body("countryCode").notEmpty().withMessage("Country code is required"),
   body("password").notEmpty().withMessage("Password is required"),
 ];
 
-exports.loginWithOtpValidator = [
+export const loginWithOtpValidator = [
   body("phoneNumber").notEmpty().withMessage("Phone number is required"),
   body("countryCode").notEmpty().withMessage("Country code is required"),
   body("otp").notEmpty().withMessage("OTP is required"),
 ];
 
-exports.updateDairyValidator = [
+export const updateDairyValidator = [
   body("dairyId").notEmpty().withMessage("ID is required"),
   body("fullName").notEmpty().withMessage("Full name is required"),
   // body("phoneNumber").notEmpty().withMessage("Phone number is required"),
 ];
 
+// -------------------- SNF Fat Validators --------------------
 
-// SNF Fat Validators
-exports.storeSnfFatValidator = [
-    check("data").isArray().withMessage("Data must be an array"),
-    check("data.*.snf")
-        .exists().withMessage("SNF is required")
-        .isNumeric().withMessage("SNF must be numeric"),
-    check("data.*.fat")
-        .exists().withMessage("FAT is required")
-        .isNumeric().withMessage("FAT must be numeric"),
-    check("data.*.dairy_id")
-        .exists().withMessage("Dairy ID is required"),
-    check("data.*.value")
-        .optional().isNumeric().withMessage("Value must be numeric"),
-    check("data.*.categorychart_id")
-        .optional().isInt().withMessage("Category Chart ID must be an integer"),
+export const storeSnfFatValidator = [
+  check("data").isArray().withMessage("Data must be an array"),
+  check("data.*.snf")
+    .exists().withMessage("SNF is required")
+    .isNumeric().withMessage("SNF must be numeric"),
+  check("data.*.fat")
+    .exists().withMessage("FAT is required")
+    .isNumeric().withMessage("FAT must be numeric"),
+  check("data.*.dairy_id")
+    .exists().withMessage("Dairy ID is required"),
+  check("data.*.value")
+    .optional().isNumeric().withMessage("Value must be numeric"),
+  check("data.*.categorychart_id")
+    .optional().isInt().withMessage("Category Chart ID must be an integer"),
 ];
 
-exports.updateSnfFatValidator = [
-    check("data").isArray().withMessage("Data must be an array"),
-    check("data.*.id")
-        .exists().withMessage("ID is required")
-        .isInt().withMessage("ID must be an integer"),
-    check("data.*.snf")
-        .exists().withMessage("SNF is required")
-        .isNumeric().withMessage("SNF must be numeric"),
-    check("data.*.fat")
-        .exists().withMessage("FAT is required")
-        .isNumeric().withMessage("FAT must be numeric"),
-    check("data.*.dairy_id")
-        .exists().withMessage("Dairy ID is required")
-        .isInt().withMessage("Dairy ID must be an integer"),
-    check("data.*.value")
-        .optional().isNumeric().withMessage("Value must be numeric"),
-    check("data.*.categorychart_id")
-        .optional().isInt().withMessage("Category Chart ID must be an integer"),
+export const updateSnfFatValidator = [
+  check("data").isArray().withMessage("Data must be an array"),
+  check("data.*.id")
+    .exists().withMessage("ID is required")
+    .isInt().withMessage("ID must be an integer"),
+  check("data.*.snf")
+    .exists().withMessage("SNF is required")
+    .isNumeric().withMessage("SNF must be numeric"),
+  check("data.*.fat")
+    .exists().withMessage("FAT is required")
+    .isNumeric().withMessage("FAT must be numeric"),
+  check("data.*.dairy_id")
+    .exists().withMessage("Dairy ID is required")
+    .isInt().withMessage("Dairy ID must be an integer"),
+  check("data.*.value")
+    .optional().isNumeric().withMessage("Value must be numeric"),
+  check("data.*.categorychart_id")
+    .optional().isInt().withMessage("Category Chart ID must be an integer"),
 ];

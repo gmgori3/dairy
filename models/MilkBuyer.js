@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const milkBuyerSchema = new mongoose.Schema(
   {
@@ -21,15 +21,15 @@ const milkBuyerSchema = new mongoose.Schema(
     milkType: { type: String, enum: ["cow", "buffalo"], required: true },
     totalPrice: { type: Number, required: true },
     milkWeight: { type: Number, required: true },
-    deletedAt: { type: Date, default: null } // soft delete equivalent
+    deletedAt: { type: Date, default: null }, // soft delete equivalent
   },
   { timestamps: true } // createdAt, updatedAt
 );
 
-// Soft delete helper (similar to Laravel's SoftDeletes)
+// Soft delete helper
 milkBuyerSchema.methods.softDelete = function () {
   this.deletedAt = new Date();
   return this.save();
 };
 
-module.exports = mongoose.model("MilkBuyer", milkBuyerSchema);
+export default mongoose.model("MilkBuyer", milkBuyerSchema);

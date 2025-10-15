@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const CustomerSchema = new mongoose.Schema(
   {
@@ -17,11 +17,13 @@ const CustomerSchema = new mongoose.Schema(
       default: 0,
       comment: '0 = Not Set, 1 = Fixed Price, 2 = SNF (Solid Not Fat), 3 = CLR (Combined Lactometer Reading)'
     },
-    latitude: { type: Number }, // No validation
-    longitude: { type: Number }, // No validation
+    latitude: { type: Number },
+    longitude: { type: Number },
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Customer", CustomerSchema);
+const Customer = mongoose.model("Customer", CustomerSchema);
+
+export default Customer;

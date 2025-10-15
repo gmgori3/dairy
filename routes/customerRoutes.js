@@ -1,21 +1,28 @@
-const express = require("express");
-const router = express.Router();
-const customerController = require("../controllers/customerController");
-const validate = require("../middleware/validate");
-const authMiddleware = require("../middleware/authMiddleware");
-const {
+import express from "express";
+import {
+  registerCustomer,
+  loginCustomer,
+  updateCustomer,
+  editCustomer,
+  deleteCustomer
+} from "../controllers/customerController.js";
+
+import validate from "../middleware/validate.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import {
   registerCustomerValidator,
   loginCustomerValidator,
   updateCustomerValidator,
   deleteCustomerValidator,
-  editCustomerValidator,
-} = require("../validators/customerValidator");
+  editCustomerValidator
+} from "../validators/customerValidator.js";
 
-router.post("/register-customer", registerCustomerValidator, validate, customerController.registerCustomer);
-router.post("/login-customer", loginCustomerValidator, validate, customerController.loginCustomer);
+const router = express.Router();
 
-router.put("/update-customer", authMiddleware, updateCustomerValidator, validate, customerController.updateCustomer);
-router.delete("/delete-customer", authMiddleware, deleteCustomerValidator, validate, customerController.deleteCustomer);
-router.get("/edit-customer/:id", authMiddleware, editCustomerValidator, validate, customerController.editCustomer);
+router.post("/register-customer", registerCustomerValidator, validate, registerCustomer);
+router.post("/login-customer", loginCustomerValidator, validate, loginCustomer);
+router.put("/update-customer", authMiddleware, updateCustomerValidator, validate, updateCustomer);
+router.get("/edit-customer/:id", authMiddleware, editCustomerValidator, validate, editCustomer);
+router.delete("/delete-customer", authMiddleware, deleteCustomerValidator, validate, deleteCustomer);
 
-module.exports = router;
+export default router;

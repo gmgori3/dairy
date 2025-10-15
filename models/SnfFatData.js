@@ -1,5 +1,5 @@
 // models/SnfFatData.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const snfFatDataSchema = new mongoose.Schema({
   snf: { type: Number, required: true },
@@ -9,4 +9,4 @@ const snfFatDataSchema = new mongoose.Schema({
   dairy_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 }, { timestamps: true });
 
-module.exports = mongoose.model("SnfFatData", snfFatDataSchema);
+export default mongoose.model("SnfFatData", snfFatDataSchema);
